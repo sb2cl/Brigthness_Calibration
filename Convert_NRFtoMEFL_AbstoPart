@@ -1,0 +1,37 @@
+function [R, Rlog,P, M] = Convert_NRFtoMEFL_AbstoPart(Abs600,Fluo,B)
+%Convert_NRFtoMEFL_AbstoPart Summary of this function goes here
+%   Calibration of Particles (P), MEFL(M) and MEFL per Particle (R).
+%   Abs600 is the measured Absorbance at 600nm. Fluo is the measured
+%   fluorescence intensity at the desired wavelength. 
+%   Calibration is performed in fluorescin, so it is necesary to have a
+%   spectral correction factor to normalize to the maximum emision and 
+%   exitation.
+
+
+%   Calibration of Particles (P), MEFL(M) and MEFL per Particle (R)
+%   For Abs --> Particle
+%   Part = (10^p0)*(x^p1)
+%   Coefficients (with 95% confidence bounds):
+       p0 =  8.062; %  (7.975,8.149)
+       p1 =  1.185; %  (1.082,1.287)
+      
+       P = (10^p0).*(Abs600.^p1);     
+
+% For Fluorescent Radiance to NFR 
+% We divide by the protein brightness
+       NFR  = Fluo / B;
+       
+
+% MEFL = (10^q0)*(NFR^q1)
+% Coefficients (with 95% confidence bounds):
+       q0 = 12.28;  %(12.27,12.29)
+       q1 = 1.038;  %(1.028,1.047)
+       M = (10^q0).*(NFR.^q1);
+       
+% Ratio MEFL per Particle (R)
+
+R = M./P;
+Rlog = log10(R);
+
+end
+
